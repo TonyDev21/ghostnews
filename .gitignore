@@ -16,3 +16,29 @@ Thumbs.db
 # IDE
 .vscode/
 .idea/
+
+# Node.js (Electron)
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+.npm/
+
+# Electron builds (archivos muy grandes)
+dist/
+out/
+build/
+*.AppImage
+*.exe
+*.dmg
+*.zip
+*.tar.gz
+*-unpacked/
+
+# Archivos de desarrollo
+.env
+.env.local
+.env.development
+.env.test
+.env.production
