@@ -1,19 +1,32 @@
 # GHOST NEWS 👻📰
 
-## ¿Cómo instalar GHOST NEWS en tu computadora Windows?
+## 📦 Para Usuarios: Descargar e Instalar
 
-### 🎯 PARA USUARIOS: Descarga el .exe listo
+### 🎯 ¿Solo quieres usar la aplicación?
 
-**✅ OPCIÓN MÁS FÁCIL:** 
+**¡Súper fácil!**
 
-1. **Ve a la página de releases:** https://github.com/TonyDev21/ghostnews/releases
-2. **Descarga** el archivo `GHOST NEWS Setup.exe` 
-3. **Ejecuta** el instalador descargado
-4. **¡Listo!** Ya tienes GHOST NEWS instalado
+1. **Contacta al desarrollador** para obtener el archivo `GHOST-NEWS-Setup.exe`
+2. **Descarga** el instalador 
+3. **Haz doble clic** en el archivo descargado
+4. **Sigue** el asistente de instalación
+5. **¡Listo!** Abre GHOST NEWS desde tu escritorio
 
-### 📋 Opción 2: Compilar desde el código fuente
+### ✅ Lo que necesitas:
+- Windows 10/11
+- Python 3.8+ (el instalador te ayudará si no lo tienes)
 
-**Solo si quieres compilar tú mismo:**
+### ❌ Lo que NO necesitas:
+- Conocimientos de programación
+- Git, GitHub, repositorios  
+- Node.js, npm, comandos
+- Terminal o compilar código
+
+---
+
+## 🔧 Para Desarrolladores: Compilar desde Código
+
+### ¿Quieres generar tu propio .exe?
 
 #### Prerrequisitos
 - Windows 10/11
