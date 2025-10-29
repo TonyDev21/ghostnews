@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GHOST NEWS - Inicio</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Montserrat:wght@700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="styles.css">
+</head>
+<body>
+    <header class="header">
+        <h1>GHOST NEWS</h1>
+    </header>
+    
+    <nav class="navbar">
+        <a href="#inicio" class="nav-item active" onclick="showSection('inicio')">🏠 Inicio</a>
+        <a href="#tecnologia" class="nav-item" onclick="showSection('tecnologia')">🌐 Tecnología</a>
+        <a href="#deportes" class="nav-item" onclick="showSection('deportes')">🏈 Deportes</a>
+        <a href="#economia" class="nav-item" onclick="showSection('economia')">💰 Economía</a>
+        <a href="#internacional" class="nav-item" onclick="showSection('internacional')">🌍 Internacional</a>
+        <a href="#nacional" class="nav-item" onclick="showSection('nacional')">🇵🇪 Nacional</a>
+    </nav>
+
+    <main class="content-area">
+        <!-- SECCIÓN INICIO -->
+        <div id="inicio" class="section active">
+            <div class="welcome-container">
+                <h2>🌐 Analizador de Noticias</h2>
+                <p>Ingresa cualquier URL de noticias y obtén resúmenes automáticos.</p>
+                
+                <div class="url-input-section">
+                    <form id="newsForm" class="search-form">
+                        <div class="input-group">
+                            <input 
+                                type="url" 
+                                id="urlInput" 
+                                placeholder="Ingresa la URL del sitio de noticias (ej: https://www.bbc.com/mundo)"
+                                required
+                            >
+                            <button type="submit" class="search-button">
+                                🔍 Analizar
+                            </button>
+                        </div>
+                    </form>
+                    
+                </div>
+                
+                <div id="loadingIndicator" class="loading" style="display: none;">
+                    <div class="spinner"></div>
+                    <p>🔍 Analizando sitio web y extrayendo noticias...</p>
+                </div>
+                
+                <div id="results" class="results-container" style="display: none;">
+                    <!-- Aquí se mostrarán los resultados -->
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN TECNOLOGÍA -->
+        <div id="tecnologia" class="section">
+            <div class="category-container">
+                <div class="category-header">
+                    <h2>🌐 Tecnología e Innovación</h2>
+                </div>
+                <div id="tecnologia-content" class="category-content">
+                    <div class="loading-category">
+                        <div class="spinner"></div>
+                        <p>Cargando noticias de tecnología...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN DEPORTES -->
+        <div id="deportes" class="section">
+            <div class="category-container">
+                <div class="category-header">
+                    <h2>🏈 Deportes</h2>
+                </div>
+                <div id="deportes-content" class="category-content">
+                    <div class="loading-category">
+                        <div class="spinner"></div>
+                        <p>Cargando noticias deportivas...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN ECONOMÍA -->
+        <div id="economia" class="section">
+            <div class="category-container">
+                <div class="category-header">
+                    <h2>💰 Economía y Finanzas</h2>
+                </div>
+                <div id="economia-content" class="category-content">
+                    <div class="loading-category">
+                        <div class="spinner"></div>
+                        <p>Cargando noticias económicas...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN INTERNACIONAL -->
+        <div id="internacional" class="section">
+            <div class="category-container">
+                <div class="category-header">
+                    <h2>🌍 Internacional</h2>
+                </div>
+                <div id="internacional-content" class="category-content">
+                    <div class="loading-category">
+                        <div class="spinner"></div>
+                        <p>Cargando noticias internacionales...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- SECCIÓN NACIONAL -->
+        <div id="nacional" class="section">
+            <div class="category-container">
+                <div class="category-header">
+                    <h2>🇵🇪 Nacional</h2>
+                </div>
+                <div id="nacional-content" class="category-content">
+                    <div class="loading-category">
+                        <div class="spinner"></div>
+                        <p>Cargando noticias nacionales...</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // NAVEGACIÓN ENTRE SECCIONES
+        function showSection(sectionId) {
+            // Ocultar todas las secciones
+            document.querySelectorAll('.section').forEach(section => {
+                section.classList.remove('active');
+            });
+            
+            // Quitar clase active de todos los nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Mostrar la sección seleccionada
+            document.getElementById(sectionId).classList.add('active');
+            
+            // Activar el nav item correspondiente
+            event.target.classList.add('active');
+            
+            // Cargar contenido si es una categoría
+            if (sectionId !== 'inicio') {
+                loadCategoryNews(sectionId, getCategoryUrl(sectionId));
+            }
+        }
+        
+        function getCategoryUrl(category) {
+            const urls = {
+                'tecnologia': 'https://tec.com.pe',
+                'deportes': 'https://www.espn.com.pe',
+                'economia': 'https://gestion.pe',
+                'internacional': 'https://www.bbc.com/mundo',
+                'nacional': 'https://www.elcomercio.pe'
+            };
+            return urls[category];
+        }
+        
+        // CARGAR NOTICIAS POR CATEGORÍA
+        async function loadCategoryNews(category, url) {
+            const contentDiv = document.getElementById(category + '-content');
+            
+            // Mostrar loading
+            contentDiv.innerHTML = `
+                <div class="loading-category">
+                    <div class="spinner"></div>
+                    <p>Cargando noticias de ${category}...</p>
+                </div>
+            `;
+            
+            try {
+                const response = await fetch('/api/extract-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayCategoryResults(data, contentDiv);
+                } else {
+                    throw new Error(data.error || 'Error al cargar noticias');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                contentDiv.innerHTML = `
+                    <div class="error-category">
+                        <h3>⚠️ Error al Cargar</h3>
+                        <p>No se pudieron cargar las noticias de esta categoría.</p>
+                        <button class="retry-btn" onclick="loadCategoryNews('${category}', '${url}')">
+                            🔄 Reintentar
+                        </button>
+                    </div>
+                `;
+            }
+        }
+        
+        function displayCategoryResults(data, contentDiv) {
+            let html = `<div class="news-grid">`;
+            
+            data.noticias.forEach((noticia, index) => {
+                const imagenHtml = noticia.imagen ? 
+                    `<img src="${noticia.imagen}" alt="Imagen de noticia" onerror="this.style.display='none'">` : 
+                    '<div class="no-image">📰</div>';
+                
+                html += `
+                    <article class="news-card">
+                        <div class="news-image">
+                            ${imagenHtml}
+                        </div>
+                        <div class="news-content">
+                            <h4 class="news-title">
+                                <a href="${noticia.enlace}" target="_blank">${noticia.titulo}</a>
+                            </h4>
+                            <p class="news-summary">${noticia.resumen}</p>
+                            <div class="news-footer">
+                                <a href="${noticia.enlace}" target="_blank" class="read-more">Leer más →</a>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+            html += '</div>';
+            contentDiv.innerHTML = html;
+        }
+
+        // FUNCIONES ORIGINALES DE INICIO
+        function setUrl(url) {
+            document.getElementById('urlInput').value = url;
+        }
+
+        document.getElementById('newsForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const url = document.getElementById('urlInput').value;
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const results = document.getElementById('results');
+            
+            if (!url) {
+                alert('Por favor ingresa una URL válida');
+                return;
+            }
+            
+            // Mostrar indicador de carga
+            loadingIndicator.style.display = 'block';
+            results.style.display = 'none';
+            
+            // Llamar al backend para procesar la URL
+            processNewsUrl(url);
+        });
+
+        async function processNewsUrl(url) {
+            try {
+                // Llamar al backend local
+                const response = await fetch('/api/extract-news', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ url: url })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayResults(data);
+                } else {
+                    throw new Error(data.error || 'Error al procesar la URL');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loadingIndicator').style.display = 'none';
+                document.getElementById('results').innerHTML = `
+                    <div class="error-message">
+                        <h3>⚠️ Error de Conexión</h3>
+                        <p><strong>No se pudo conectar con el servidor.</strong></p>
+                        <p>Para usar GHOST NEWS:</p>
+                        <ol style="text-align: left; max-width: 400px; margin: 1rem auto;">
+                            <li>Abre una terminal</li>
+                            <li>Navega a la carpeta del proyecto</li>
+                            <li>Ejecuta: <code>python3 servidor_web.py</code></li>
+                            <li>Accede a: <code>http://localhost:8000</code></li>
+                        </ol>
+                        <p style="margin-top: 1.5rem;"><em>El servidor debe estar ejecutándose para procesar URLs</em></p>
+                    </div>
+                `;
+                document.getElementById('results').style.display = 'block';
+            }
+        }
+
+        function displayResults(data) {
+            const results = document.getElementById('results');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            
+            loadingIndicator.style.display = 'none';
+            
+            let html = `
+                <div class="results-header">
+                    <h3>📰 ${data.count} Noticias Extraídas</h3>
+                    <p>Generado el ${new Date().toLocaleDateString('es-ES')} a las ${new Date().toLocaleTimeString('es-ES')}</p>
+                </div>
+                <div class="news-grid">
+            `;
+            
+            data.noticias.forEach((noticia, index) => {
+                const imagenHtml = noticia.imagen ? 
+                    `<img src="${noticia.imagen}" alt="Imagen de noticia" onerror="this.style.display='none'">` : 
+                    '<div class="no-image">📰</div>';
+                
+                html += `
+                    <article class="news-card">
+                        <div class="news-image">
+                            ${imagenHtml}
+                        </div>
+                        <div class="news-content">
+                            <h4 class="news-title">
+                                <a href="${noticia.enlace}" target="_blank">${noticia.titulo}</a>
+                            </h4>
+                            <p class="news-summary">${noticia.resumen}</p>
+                            <div class="news-footer">
+                                <a href="${noticia.enlace}" target="_blank" class="read-more">Leer más →</a>
+                            </div>
+                        </div>
+                    </article>
+                `;
+            });
+            
+            html += '</div>';
+            results.innerHTML = html;
+            results.style.display = 'block';
+            
+            // Scroll suave hacia los resultados
+            results.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        // CARGAR TECNOLOGÍA AL INICIAR
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar automáticamente la sección de tecnología
+            setTimeout(() => {
+                if (document.getElementById('tecnologia-content').innerHTML.includes('Cargando')) {
+                    loadCategoryNews('tecnologia', 'https://tec.com.pe');
+                }
+            }, 1000);
+        });
+    </script>
+</body>
+</html>
