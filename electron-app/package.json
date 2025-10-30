@@ -15,18 +15,45 @@
   "build": {
     "appId": "com.tonydev.ghostnews",
     "productName": "GHOST NEWS",
+    "electronDownload": {
+      "cache": "~/.electron"
+    },
     "directories": {
       "output": "dist",
       "buildResources": "build"
     },
     "files": [
       "main.js",
-      "assets/**/*",
-      "../servidor_web.py",
-      "../tecnologiaInovacion.py",
-      "../index.html",
-      "../styles.css",
-      "../requirements.txt"
+      "assets/**/*"
+    ],
+    "asarUnpack": [
+      "**/*.py",
+      "../*.py",
+      "../*.html",
+      "../*.css"
+    ],
+    "extraResources": [
+      {
+        "from": "python-embed",
+        "to": "python-embed",
+        "filter": ["**/*"]
+      },
+      {
+        "from": "../servidor_web.py",
+        "to": "servidor_web.py"
+      },
+      {
+        "from": "../tecnologiaInovacion.py",
+        "to": "tecnologiaInovacion.py"
+      },
+      {
+        "from": "../index.html",
+        "to": "index.html"
+      },
+      {
+        "from": "../styles.css",
+        "to": "styles.css"
+      }
     ],
     "win": {
       "target": [
@@ -40,7 +67,10 @@
         }
       ],
       "publisherName": "TonyDev21",
-      "requestedExecutionLevel": "asInvoker"
+      "requestedExecutionLevel": "asInvoker",
+      "sign": null,
+      "verifyUpdateCodeSignature": false,
+      "signAndEditExecutable": false
     },
     "nsis": {
       "oneClick": false,

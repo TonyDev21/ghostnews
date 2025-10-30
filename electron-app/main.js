@@ -1,6 +1,7 @@
 const { app, BrowserWindow, shell } = require('electron');
 const path = require('path');
 const { spawn } = require('child_process');
+const fs = require('fs');
 
 let mainWindow;
 let pythonProcess;
@@ -8,6 +9,20 @@ let pythonProcess;
 // Configuración de la aplicación
 const isDev = process.env.NODE_ENV === 'development';
 const serverPort = 8080;
+
+// Archivo de log para debugging
+const logFile = path.join(app.getPath('userData'), 'ghost-news.log');
+
+function log(message) {
+    const timestamp = new Date().toISOString();
+    const logMessage = `[${timestamp}] ${message}\n`;
+    console.log(message);
+    try {
+        fs.appendFileSync(logFile, logMessage);
+    } catch (err) {
+        console.error('Error escribiendo log:', err);
+    }
+}
 
 function createWindow() {
     mainWindow = new BrowserWindow({
@@ -51,26 +66,58 @@ function createWindow() {
 
 function startPythonServer() {
     const pythonPath = findPythonExecutable();
-    const serverScript = path.join(__dirname, '..', 'servidor_web.py');
     
-    console.log('🐍 Iniciando servidor Python...');
-    console.log('Python executable:', pythonPath);
-    console.log('Server script:', serverScript);
+    // Determinar la ruta del servidor y directorio de trabajo
+    let serverScript, workingDir;
     
-    // Iniciar proceso Python
-    pythonProcess = spawn(pythonPath, [serverScript], {
-        cwd: path.join(__dirname, '..'),
+    if (!isDev && app.isPackaged) {
+        // En producción, los archivos están en resources
+        serverScript = path.join(process.resourcesPath, 'servidor_web.py');
+        workingDir = process.resourcesPath;
+    } else {
+        // En desarrollo
+        serverScript = path.join(__dirname, '..', 'servidor_web.py');
+        workingDir = path.join(__dirname, '..');
+    }
+    
+    log('=== Iniciando servidor Python ===');
+    log('isDev: ' + isDev);
+    log('app.isPackaged: ' + app.isPackaged);
+    log('Python executable: ' + pythonPath);
+    log('Server script: ' + serverScript);
+    log('Working directory: ' + workingDir);
+    log('Process resourcesPath: ' + process.resourcesPath);
+    log('__dirname: ' + __dirname);
+    
+    // Verificar que los archivos existan
+    if (!fs.existsSync(pythonPath)) {
+        log('ERROR: Python executable no encontrado en: ' + pythonPath);
+        showErrorDialog('Error', 'No se encontró el ejecutable de Python en: ' + pythonPath);
+        return;
+    }
+    
+    if (!fs.existsSync(serverScript)) {
+        log('ERROR: servidor_web.py no encontrado en: ' + serverScript);
+        showErrorDialog('Error', 'No se encontró servidor_web.py en: ' + serverScript);
+        return;
+    }
+    
+    log('Archivos verificados, iniciando proceso...');
+    
+    // Iniciar proceso Python con -u para unbuffered output
+    pythonProcess = spawn(pythonPath, ['-u', serverScript], {
+        cwd: workingDir,
         stdio: ['pipe', 'pipe', 'pipe'],
-        env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }
+        env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1', PYTHONIOENCODING: 'utf-8', PYTHONUNBUFFERED: '1' }
     });
 
     pythonProcess.stdout.on('data', (data) => {
         const output = data.toString();
-        console.log('📡 Python stdout:', output);
+        log('Python stdout: ' + output);
         
         // Detectar cuando el servidor está listo
-        if (output.includes('Servidor iniciado') || output.includes('serving at')) {
-            console.log('✅ Servidor Python listo');
+        if (output.includes('Servidor iniciado') || output.includes('Servidor corriendo')) {
+            log('Servidor Python listo, cargando interfaz...');
             setTimeout(() => {
                 if (mainWindow && !mainWindow.isDestroyed()) {
                     mainWindow.loadURL(`http://localhost:${serverPort}`);
@@ -81,7 +128,7 @@ function startPythonServer() {
 
     pythonProcess.stderr.on('data', (data) => {
         const error = data.toString();
-        console.error('❌ Python stderr:', error);
+        log('Python stderr: ' + error);
         
         // Si hay error crítico, mostrar mensaje
         if (error.includes('Error') || error.includes('Exception')) {
@@ -90,20 +137,32 @@ function startPythonServer() {
     });
 
     pythonProcess.on('close', (code) => {
-        console.log(`🔴 Proceso Python terminado con código ${code}`);
+        log(`Proceso Python terminado con código ${code}`);
         if (code !== 0 && mainWindow && !mainWindow.isDestroyed()) {
             showErrorDialog('Servidor cerrado', `El servidor Python se cerró inesperadamente (código ${code})`);
         }
     });
 
     pythonProcess.on('error', (error) => {
-        console.error('💥 Error al iniciar Python:', error);
-        showErrorDialog('Error de Python', 'No se pudo iniciar el servidor Python. Asegúrate de que Python esté instalado.');
+        log('Error al iniciar Python: ' + error.message);
+        showErrorDialog('Error de Python', 'No se pudo iniciar el servidor Python: ' + error.message);
     });
 }
 
 function findPythonExecutable() {
-    // Posibles rutas de Python en Windows
+    // En producción, usar el Python embebido incluido en la app
+    if (!isDev && app.isPackaged) {
+        const embeddedPython = path.join(process.resourcesPath, 'python-embed', 'python.exe');
+        log('Usando Python embebido: ' + embeddedPython);
+        return embeddedPython;
+    }
+
+    // En desarrollo, buscar Python del sistema
+    if (isDev) {
+        return process.platform === 'win32' ? 'python' : 'python3';
+    }
+
+    // Fallback: buscar Python instalado en el sistema
     const possiblePaths = [
         'python',
         'python3',
@@ -117,12 +176,6 @@ function findPythonExecutable() {
         'C:\\Python311\\python.exe'
     ];
 
-    // En desarrollo usar python del sistema
-    if (isDev) {
-        return process.platform === 'win32' ? 'python' : 'python3';
-    }
-
-    // En producción, buscar Python instalado
     return 'python';
 }
 

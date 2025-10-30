@@ -52,7 +52,7 @@ class NewsHandler(BaseHTTPRequestHandler):
     def extract_news(self):
         """Extrae noticias de la URL proporcionada"""
         try:
-            print("📨 Recibida solicitud POST para extraer noticias")
+            print("Recibida solicitud POST para extraer noticias")
             
             # Leer datos del POST
             content_length = int(self.headers.get('Content-Length', 0))
@@ -60,20 +60,20 @@ class NewsHandler(BaseHTTPRequestHandler):
             data = json.loads(post_data.decode('utf-8'))
             
             url = data.get('url', '')
-            print(f"🔗 URL recibida: {url}")
+            print(f"URL recibida: {url}")
             
             if not url:
-                print("❌ URL vacía")
+                print("ERROR: URL vacia")
                 self.send_json_error(400, "URL requerida")
                 return
 
-            print(f"🌐 Procesando URL: {url}")
+            print(f"Procesando URL: {url}")
             
             # Extraer noticias usando nuestro sistema
             noticias = extraer_noticias_web(url)
             
             if not noticias:
-                print("❌ No se encontraron noticias")
+                print("ERROR: No se encontraron noticias")
                 self.send_json_error(404, "No se encontraron noticias en la URL")
                 return
 
@@ -95,13 +95,13 @@ class NewsHandler(BaseHTTPRequestHandler):
             }
             
             self.send_json_response(200, response)
-            print(f"✅ Enviadas {len(noticias_list)} noticias al frontend")
+            print(f"OK: Enviadas {len(noticias_list)} noticias al frontend")
 
         except json.JSONDecodeError as e:
-            print(f"❌ Error JSON: {e}")
+            print(f"ERROR JSON: {e}")
             self.send_json_error(400, "JSON inválido")
         except Exception as e:
-            print(f"❌ Error procesando noticias: {e}")
+            print(f"ERROR procesando noticias: {e}")
             import traceback
             traceback.print_exc()
             self.send_json_error(500, f"Error del servidor: {str(e)}")
@@ -134,28 +134,29 @@ class NewsHandler(BaseHTTPRequestHandler):
         self.send_header('Access-Control-Allow-Headers', 'Content-Type')
         self.end_headers()
 
-def run_server(port=8000):
+def run_server(port=8080):
     """Ejecuta el servidor web"""
     server_address = ('', port)
     httpd = HTTPServer(server_address, NewsHandler)
     
-    print("🚀 GHOST NEWS - Servidor Web Iniciado")
     print("="*50)
-    print(f"🌐 Servidor corriendo en: http://localhost:{port}")
-    print(f"📱 Accede desde tu navegador a: http://localhost:{port}")
+    print(f"GHOST NEWS - Servidor Web Iniciado")
     print("="*50)
-    print("📋 Endpoints disponibles:")
-    print("   GET  /                    - Página principal")
-    print("   GET  /index.html          - Página principal")
+    print(f"Servidor corriendo en: http://localhost:{port}")
+    print(f"Accede desde tu navegador a: http://localhost:{port}")
+    print("="*50)
+    print("Endpoints disponibles:")
+    print("   GET  /                    - Pagina principal")
+    print("   GET  /index.html          - Pagina principal")
     print("   POST /api/extract-news    - Extraer noticias")
     print("="*50)
-    print("💡 Presiona Ctrl+C para detener el servidor")
+    print("Presiona Ctrl+C para detener el servidor")
     print()
     
     try:
         httpd.serve_forever()
     except KeyboardInterrupt:
-        print("\n🛑 Servidor detenido por el usuario")
+        print("\nServidor detenido por el usuario")
         httpd.server_close()
 
 if __name__ == '__main__':
@@ -164,8 +165,8 @@ if __name__ == '__main__':
     
     # Verificar que existe el archivo principal
     if not os.path.exists('tecnologiaInovacion.py'):
-        print("❌ Error: No se encuentra tecnologiaInovacion.py")
-        print("   Asegúrate de ejecutar este servidor desde el directorio del proyecto")
+        print("ERROR: No se encuentra tecnologiaInovacion.py")
+        print("   Asegurate de ejecutar este servidor desde el directorio del proyecto")
         sys.exit(1)
     
     # Iniciar servidor
